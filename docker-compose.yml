@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+    postgres:
+        image: postgres:13
+        restart: always 
+        env_file:
+          - .env
+        volumes:
+        - postgres_data:/var/lib/postgresql/data
+        expose:
+          - ${POSTGRES_PORT}
+          
+    django:
+        build: ./DjangoProject
+        restart: always
+        command: ["sh", "./entrypoint_web.sh"]
+        volumes: 
+          - ./DjangoProject/Web:/home/DjangoProject/
+          - static_volume:/home/DjangoProject/static
+        ports:
+          - 8000:8000
+        expose:
+          - 8000
+        env_file:
+          - .env
+        user: "${UID}:${GID}"
+        depends_on:
+          - postgres
+
+    nginx:
+        build: ./Nginx
+        restart: always 
+        volumes:
+          - static_volume:/home/DjangoProject/static
+        ports:
+          - 80:80
+        depends_on:
+          - django
+
+volumes:
+  postgres_data:
+  static_volume:

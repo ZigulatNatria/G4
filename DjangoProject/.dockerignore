@@ -1,0 +1,6 @@
+/venv/
+**/.idea/
+**/__pycache__/
+commands.md
+/Postgres_data/
+/.vscode/
